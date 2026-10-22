@@ -6,7 +6,6 @@
   <title>Amplify Link Finder — Sign In</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #1a1a1a;
@@ -17,7 +16,6 @@
       justify-content: center;
       padding: 20px;
     }
-
     .card {
       background: #2a2a2a;
       border-radius: 12px;
@@ -27,180 +25,68 @@
       text-align: center;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
-
-    .logo {
-      font-size: 28px;
-      font-weight: 800;
-      color: #F37321;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 32px;
-    }
-
-    .step {
-      background: #323232;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 16px;
-      text-align: left;
-    }
-
-    .step-num {
-      display: inline-block;
-      background: #F37321;
-      color: #fff;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      text-align: center;
-      line-height: 22px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-right: 8px;
-    }
-
-    .step-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .step-desc {
-      font-size: 12px;
-      color: #999;
-      line-height: 1.6;
-    }
-
+    .logo { font-size: 28px; font-weight: 800; color: #F37321; letter-spacing: 1px; margin-bottom: 6px; }
+    .subtitle { font-size: 13px; color: #888; margin-bottom: 32px; }
+    .step { background: #323232; border-radius: 8px; padding: 20px; margin-bottom: 16px; text-align: left; }
+    .step-num { display: inline-block; background: #F37321; color: #fff; border-radius: 50%; width: 22px; height: 22px; text-align: center; line-height: 22px; font-size: 12px; font-weight: 700; margin-right: 8px; }
+    .step-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .step-desc { font-size: 12px; color: #999; line-height: 1.6; }
     .btn-google {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: #fff;
-      color: #333;
-      border: none;
-      border-radius: 6px;
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 12px;
-      text-decoration: none;
-      transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: #fff; color: #333; border: none; border-radius: 6px;
+      padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+      width: 100%; margin-top: 12px; text-decoration: none; transition: background 0.2s;
     }
-
     .btn-google:hover { background: #f0f0f0; }
-
-    .btn-google img {
-      width: 20px;
-      height: 20px;
-    }
-
+    .btn-google img { width: 20px; height: 20px; }
     .token-box {
-      display: none;
-      background: #1a1a1a;
-      border: 2px solid #F37321;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 16px;
+      display: none; background: #1a1a1a; border: 2px solid #F37321;
+      border-radius: 8px; padding: 20px; margin-top: 16px;
     }
-
-    .token-label {
-      font-size: 11px;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
-
+    .token-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .token-value {
-      font-family: monospace;
-      font-size: 11px;
-      color: #8bc34a;
-      word-break: break-all;
-      background: #111;
-      padding: 10px;
-      border-radius: 4px;
-      margin-bottom: 12px;
-      line-height: 1.6;
-      user-select: all;
-      cursor: text;
+      font-family: monospace; font-size: 10px; color: #8bc34a; word-break: break-all;
+      background: #111; padding: 10px; border-radius: 4px; margin-bottom: 12px;
+      line-height: 1.6; user-select: all; cursor: text; text-align: left;
     }
-
     .btn-copy {
-      background: #F37321;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.2s;
+      background: #F37321; color: #fff; border: none; border-radius: 6px;
+      padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      width: 100%; transition: background 0.2s;
     }
-
     .btn-copy:hover { background: #d4611a; }
-
-    .copy-success {
-      display: none;
-      color: #4caf50;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-
-    .error-box {
-      display: none;
-      background: #2a1a1a;
-      border: 1px solid #f44336;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 16px;
-      font-size: 12px;
-      color: #f44336;
-      line-height: 1.6;
-    }
-
-    .signed-in-email {
-      font-size: 12px;
-      color: #4caf50;
-      margin-bottom: 12px;
-    }
-
+    .copy-success { display: none; color: #4caf50; font-size: 12px; margin-top: 8px; }
+    .signed-in-email { font-size: 12px; color: #4caf50; margin-bottom: 12px; }
     .instructions {
-      background: #1e2a1e;
-      border: 1px solid #2a4a2a;
-      border-radius: 6px;
-      padding: 12px;
-      margin-top: 12px;
-      font-size: 11px;
-      color: #8bc34a;
-      line-height: 1.8;
-      text-align: left;
+      background: #1e2a1e; border: 1px solid #2a4a2a; border-radius: 6px;
+      padding: 12px; margin-top: 12px; font-size: 11px; color: #8bc34a;
+      line-height: 1.8; text-align: left;
     }
+    .error-box {
+      display: none; background: #2a1a1a; border: 1px solid #f44336;
+      border-radius: 8px; padding: 16px; margin-top: 16px;
+      font-size: 12px; color: #f44336; line-height: 1.6;
+    }
+    .loading { color: #888; font-size: 13px; margin-top: 16px; }
   </style>
 </head>
 <body>
-
 <div class="card">
   <div class="logo">AMPLIFY</div>
   <div class="subtitle">Link Finder — Google Drive Sign In</div>
 
-  <div class="step">
-    <div class="step-title"><span class="step-num">1</span>Sign in with Google</div>
-    <div class="step-desc">Click the button below to sign in with your Amplify Google account.</div>
-    <a id="btn-signin" href="#" class="btn-google">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
-      Sign in with Google
-    </a>
+  <div id="main-content">
+    <div class="step">
+      <div class="step-title"><span class="step-num">1</span>Sign in with Google</div>
+      <div class="step-desc">Click below to sign in with your Amplify Google account.</div>
+      <a id="btn-signin" href="#" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
+        Sign in with Google
+      </a>
+    </div>
   </div>
+
+  <div id="loading" class="loading" style="display:none;">Signing you in...</div>
 
   <div id="token-section" class="token-box">
     <div class="signed-in-email" id="signed-in-email"></div>
@@ -211,8 +97,7 @@
     <div class="instructions">
       In InDesign → Amplify Link Finder panel:<br>
       1. Click <strong>"I Have a Token"</strong><br>
-      2. Paste the token<br>
-      3. Click <strong>"Sign In"</strong>
+      2. Paste the token and click <strong>"Sign In"</strong>
     </div>
   </div>
 
@@ -220,11 +105,10 @@
 </div>
 
 <script>
-  // ── CONFIGURATION ─────────────────────────────────────────────────────────
-  const CLIENT_ID     = '78836034969-oukoojj5ef462ig9h3hsa1sqfm9167g3.apps.googleusercontent.com';
-  const CLIENT_SECRET = '';
-  const REDIRECT_URI  = 'https://beanmatt.github.io/amplify-link-finder/';
-  const SCOPE         = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email';
+  // ── CONFIGURATION — No secret needed with PKCE! ───────────────────────────
+  const CLIENT_ID    = '78836034969-oukoojj5ef462ig9h3hsa1sqfm9167g3.apps.googleusercontent.com';
+  const REDIRECT_URI = 'https://beanmatt.github.io/amplify-link-finder/';
+  const SCOPE        = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email';
   // ──────────────────────────────────────────────────────────────────────────
 
   function getUrlParam(name) {
@@ -232,26 +116,80 @@
   }
 
   function showError(msg) {
+    document.getElementById('loading').style.display       = 'none';
+    document.getElementById('main-content').style.display  = 'none';
     var box = document.getElementById('error-box');
-    box.textContent = msg;
-    box.style.display = 'block';
+    box.textContent    = msg;
+    box.style.display  = 'block';
   }
 
+  // ── PKCE Helpers ──────────────────────────────────────────────────────────
+  function generateRandom(length) {
+    var array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    return Array.from(array, function(b) {
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  }
+
+  async function generateCodeChallenge(verifier) {
+    var encoder = new TextEncoder();
+    var data    = encoder.encode(verifier);
+    var digest  = await crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(digest)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  // ── Sign In ───────────────────────────────────────────────────────────────
+  document.getElementById('btn-signin').addEventListener('click', async function(e) {
+    e.preventDefault();
+
+    var verifier   = generateRandom(64);
+    var challenge  = await generateCodeChallenge(verifier);
+
+    // Store verifier for when Google redirects back
+    sessionStorage.setItem('pkce_verifier', verifier);
+
+    var params = new URLSearchParams({
+      client_id:             CLIENT_ID,
+      redirect_uri:          REDIRECT_URI,
+      response_type:         'code',
+      scope:                 SCOPE,
+      access_type:           'offline',
+      prompt:                'consent',
+      code_challenge:        challenge,
+      code_challenge_method: 'S256'
+    });
+
+    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+  });
+
+  // ── Token Exchange ────────────────────────────────────────────────────────
   async function exchangeCode(code) {
+    var verifier = sessionStorage.getItem('pkce_verifier');
+
+    if (!verifier) {
+      showError('Session expired. Please try signing in again.');
+      return;
+    }
+
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('loading').style.display      = 'block';
+
     try {
-      const resp = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
+      var resp = await fetch('https://oauth2.googleapis.com/token', {
+        method:  'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
+        body:    new URLSearchParams({
           code:          code,
           client_id:     CLIENT_ID,
-          client_secret: CLIENT_SECRET,
           redirect_uri:  REDIRECT_URI,
-          grant_type:    'authorization_code'
+          grant_type:    'authorization_code',
+          code_verifier: verifier
         })
       });
 
-      const data = await resp.json();
+      var data = await resp.json();
 
       if (!data.access_token) {
         showError('Sign in failed: ' + (data.error_description || data.error || 'Unknown error'));
@@ -259,30 +197,28 @@
       }
 
       // Get user email
-      const userResp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      var userResp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
         headers: { Authorization: 'Bearer ' + data.access_token }
       });
-      const user = await userResp.json();
+      var user = await userResp.json();
 
-      // Build token object
-      const tokenObj = {
+      // Build token object for the plugin
+      var tokenObj = {
         access_token:  data.access_token,
         refresh_token: data.refresh_token || '',
         expiry:        Date.now() + ((data.expires_in || 3600) * 1000),
         email:         user.email || ''
       };
 
-      const tokenStr = JSON.stringify(tokenObj);
+      var tokenStr = JSON.stringify(tokenObj);
 
-      // Show token section
-      document.getElementById('signed-in-email').textContent = '✓ Signed in as ' + user.email;
-      document.getElementById('token-display').textContent   = tokenStr;
-      document.getElementById('token-section').style.display = 'block';
+      // Show token
+      document.getElementById('loading').style.display        = 'none';
+      document.getElementById('signed-in-email').textContent  = '✓ Signed in as ' + user.email;
+      document.getElementById('token-display').textContent    = tokenStr;
+      document.getElementById('token-section').style.display  = 'block';
 
-      // Hide sign in button
-      document.getElementById('btn-signin').style.display = 'none';
-
-      // Clear the code from the URL
+      sessionStorage.removeItem('pkce_verifier');
       window.history.replaceState({}, document.title, REDIRECT_URI);
 
     } catch(e) {
@@ -290,34 +226,24 @@
     }
   }
 
-  // Copy button
+  // ── Copy Button ───────────────────────────────────────────────────────────
   document.getElementById('btn-copy').addEventListener('click', function() {
     var text = document.getElementById('token-display').textContent;
     navigator.clipboard.writeText(text).then(function() {
       document.getElementById('copy-success').style.display = 'block';
-      document.getElementById('btn-copy').textContent = '✓ Copied!';
+      document.getElementById('btn-copy').textContent       = '✓ Copied!';
     }).catch(function() {
-      document.getElementById('token-display').select();
+      var el = document.getElementById('token-display');
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
     });
   });
 
-  // Sign in button
-  document.getElementById('btn-signin').addEventListener('click', function(e) {
-    e.preventDefault();
-    const params = new URLSearchParams({
-      client_id:     CLIENT_ID,
-      redirect_uri:  REDIRECT_URI,
-      response_type: 'code',
-      scope:         SCOPE,
-      access_type:   'offline',
-      prompt:        'consent'
-    });
-    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
-  });
-
-  // Check if returning from Google auth
-  const code  = getUrlParam('code');
-  const error = getUrlParam('error');
+  // ── Check If Returning From Google ────────────────────────────────────────
+  var code  = getUrlParam('code');
+  var error = getUrlParam('error');
 
   if (error) {
     showError('Sign in was cancelled or failed: ' + error);
