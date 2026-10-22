@@ -8,21 +8,13 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #1a1a1a;
-      color: #e0e0e0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      background: #1a1a1a; color: #e0e0e0;
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; padding: 20px;
     }
     .card {
-      background: #2a2a2a;
-      border-radius: 12px;
-      padding: 40px;
-      max-width: 440px;
-      width: 100%;
-      text-align: center;
+      background: #2a2a2a; border-radius: 12px; padding: 40px;
+      max-width: 440px; width: 100%; text-align: center;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
     .logo { font-size: 28px; font-weight: 800; color: #F37321; letter-spacing: 1px; margin-bottom: 6px; }
@@ -67,7 +59,7 @@
       border-radius: 8px; padding: 16px; margin-top: 16px;
       font-size: 12px; color: #f44336; line-height: 1.6;
     }
-    .loading { color: #888; font-size: 13px; margin-top: 16px; }
+    .loading { color: #888; font-size: 13px; margin-top: 16px; display: none; }
   </style>
 </head>
 <body>
@@ -86,12 +78,12 @@
     </div>
   </div>
 
-  <div id="loading" class="loading" style="display:none;">Signing you in...</div>
+  <div id="loading" class="loading">Signing you in...</div>
 
   <div id="token-section" class="token-box">
     <div class="signed-in-email" id="signed-in-email"></div>
     <div class="token-label">Step 2 — Copy this token and paste it into InDesign</div>
-    <div class="token-value" id="token-display">Loading...</div>
+    <div class="token-value" id="token-display"></div>
     <button class="btn-copy" id="btn-copy">📋 Copy Token</button>
     <div class="copy-success" id="copy-success">✓ Copied! Now paste it into the plugin panel in InDesign.</div>
     <div class="instructions">
@@ -105,102 +97,44 @@
 </div>
 
 <script>
-  // ── CONFIGURATION — No secret needed with PKCE! ───────────────────────────
-  <script>
-  const CLIENT_ID    = '78836034969-oukoojj5ef462ig9h3hsa1sqfm9167g3.apps.googleusercontent.com';
-  const REDIRECT_URI = 'https://amplifylinkfinder.netlify.app/';
+  // ── CONFIGURATION ─────────────────────────────────────────────────────────
+  const CLIENT_ID    = 'PASTE_YOUR_WEB_CLIENT_ID_HERE';
+  const REDIRECT_URI = 'https://beanmatt.github.io/amplify-link-finder/';
   const SCOPE        = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email';
-  const TOKEN_FN     = 'https://amplifylinkfinder.netlify.app/.netlify/functions/token';
-
-  function getUrlParam(name) {
-    return new URLSearchParams(window.location.search).get(name);
-  }
+  // ──────────────────────────────────────────────────────────────────────────
 
   function showError(msg) {
-    document.getElementById('loading').style.display      = 'none';
-    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('loading').style.display       = 'none';
+    document.getElementById('main-content').style.display  = 'none';
     var box = document.getElementById('error-box');
     box.textContent   = msg;
     box.style.display = 'block';
   }
 
-  function generateRandom(length) {
-    var array = new Uint8Array(length);
-    crypto.getRandomValues(array);
-    return Array.from(array, function(b) {
-      return ('0' + b.toString(16)).slice(-2);
-    }).join('');
+  function getHashParam(name) {
+    var hash   = window.location.hash.substring(1);
+    var params = new URLSearchParams(hash);
+    return params.get(name);
   }
 
-  async function generateCodeChallenge(verifier) {
-    var data   = new TextEncoder().encode(verifier);
-    var digest = await crypto.subtle.digest('SHA-256', data);
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(digest)))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  function getUrlParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
   }
 
-  document.getElementById('btn-signin').addEventListener('click', async function(e) {
+  // Sign in button — uses implicit flow (token returned directly)
+  document.getElementById('btn-signin').addEventListener('click', function(e) {
     e.preventDefault();
-    var verifier  = generateRandom(64);
-    var challenge = await generateCodeChallenge(verifier);
-    sessionStorage.setItem('pkce_verifier', verifier);
-
     var params = new URLSearchParams({
-      client_id:             CLIENT_ID,
-      redirect_uri:          REDIRECT_URI,
-      response_type:         'code',
-      scope:                 SCOPE,
-      access_type:           'offline',
-      prompt:                'consent',
-      code_challenge:        challenge,
-      code_challenge_method: 'S256'
+      client_id:     CLIENT_ID,
+      redirect_uri:  REDIRECT_URI,
+      response_type: 'token',
+      scope:         SCOPE,
+      include_granted_scopes: 'true'
     });
-
     window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
   });
 
-  async function exchangeCode(code) {
-    var verifier = sessionStorage.getItem('pkce_verifier');
-    if (!verifier) { showError('Session expired. Please try again.'); return; }
-
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('loading').style.display      = 'block';
-
-    try {
-      var resp = await fetch(TOKEN_FN, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          code:          code,
-          code_verifier: verifier,
-          redirect_uri:  REDIRECT_URI
-        })
-      });
-
-      var data = await resp.json();
-
-      if (data.error) { showError('Sign in failed: ' + data.error); return; }
-
-      var tokenObj = {
-        access_token:  data.access_token,
-        refresh_token: data.refresh_token || '',
-        expiry:        Date.now() + ((data.expires_in || 3600) * 1000),
-        email:         data.email || ''
-      };
-
-      document.getElementById('loading').style.display       = 'none';
-      document.getElementById('signed-in-email').textContent = '✓ Signed in as ' + data.email;
-      document.getElementById('token-display').textContent   = JSON.stringify(tokenObj);
-      document.getElementById('token-section').style.display = 'block';
-
-      sessionStorage.removeItem('pkce_verifier');
-      window.history.replaceState({}, document.title, REDIRECT_URI);
-
-    } catch(e) {
-      showError('Error: ' + e.message);
-    }
-  }
-
+  // Copy button
   document.getElementById('btn-copy').addEventListener('click', function() {
     var text = document.getElementById('token-display').textContent;
     navigator.clipboard.writeText(text).then(function() {
@@ -215,153 +149,40 @@
     });
   });
 
-  var code  = getUrlParam('code');
-  var error = getUrlParam('error');
-  if (error)     showError('Sign in cancelled: ' + error);
-  else if (code) exchangeCode(code);
-</script>
-  const REDIRECT_URI = 'https://beanmatt.github.io/amplify-link-finder/';
-  const SCOPE        = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email';
-  // ──────────────────────────────────────────────────────────────────────────
-
-  function getUrlParam(name) {
-    return new URLSearchParams(window.location.search).get(name);
-  }
-
-  function showError(msg) {
-    document.getElementById('loading').style.display       = 'none';
-    document.getElementById('main-content').style.display  = 'none';
-    var box = document.getElementById('error-box');
-    box.textContent    = msg;
-    box.style.display  = 'block';
-  }
-
-  // ── PKCE Helpers ──────────────────────────────────────────────────────────
-  function generateRandom(length) {
-    var array = new Uint8Array(length);
-    crypto.getRandomValues(array);
-    return Array.from(array, function(b) {
-      return ('0' + b.toString(16)).slice(-2);
-    }).join('');
-  }
-
-  async function generateCodeChallenge(verifier) {
-    var encoder = new TextEncoder();
-    var data    = encoder.encode(verifier);
-    var digest  = await crypto.subtle.digest('SHA-256', data);
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(digest)))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
-
-  // ── Sign In ───────────────────────────────────────────────────────────────
-  document.getElementById('btn-signin').addEventListener('click', async function(e) {
-    e.preventDefault();
-
-    var verifier   = generateRandom(64);
-    var challenge  = await generateCodeChallenge(verifier);
-
-    // Store verifier for when Google redirects back
-    sessionStorage.setItem('pkce_verifier', verifier);
-
-    var params = new URLSearchParams({
-      client_id:             CLIENT_ID,
-      redirect_uri:          REDIRECT_URI,
-      response_type:         'code',
-      scope:                 SCOPE,
-      access_type:           'offline',
-      prompt:                'consent',
-      code_challenge:        challenge,
-      code_challenge_method: 'S256'
-    });
-
-    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
-  });
-
-  // ── Token Exchange ────────────────────────────────────────────────────────
-  async function exchangeCode(code) {
-    var verifier = sessionStorage.getItem('pkce_verifier');
-
-    if (!verifier) {
-      showError('Session expired. Please try signing in again.');
-      return;
-    }
-
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('loading').style.display      = 'block';
-
-    try {
-      var resp = await fetch('https://oauth2.googleapis.com/token', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body:    new URLSearchParams({
-          code:          code,
-          client_id:     CLIENT_ID,
-          redirect_uri:  REDIRECT_URI,
-          grant_type:    'authorization_code',
-          code_verifier: verifier
-        })
-      });
-
-      var data = await resp.json();
-
-      if (!data.access_token) {
-        showError('Sign in failed: ' + (data.error_description || data.error || 'Unknown error'));
-        return;
-      }
-
-      // Get user email
-      var userResp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-        headers: { Authorization: 'Bearer ' + data.access_token }
-      });
-      var user = await userResp.json();
-
-      // Build token object for the plugin
-      var tokenObj = {
-        access_token:  data.access_token,
-        refresh_token: data.refresh_token || '',
-        expiry:        Date.now() + ((data.expires_in || 3600) * 1000),
-        email:         user.email || ''
-      };
-
-      var tokenStr = JSON.stringify(tokenObj);
-
-      // Show token
-      document.getElementById('loading').style.display        = 'none';
-      document.getElementById('signed-in-email').textContent  = '✓ Signed in as ' + user.email;
-      document.getElementById('token-display').textContent    = tokenStr;
-      document.getElementById('token-section').style.display  = 'block';
-
-      sessionStorage.removeItem('pkce_verifier');
-      window.history.replaceState({}, document.title, REDIRECT_URI);
-
-    } catch(e) {
-      showError('Error: ' + e.message);
-    }
-  }
-
-  // ── Copy Button ───────────────────────────────────────────────────────────
-  document.getElementById('btn-copy').addEventListener('click', function() {
-    var text = document.getElementById('token-display').textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      document.getElementById('copy-success').style.display = 'block';
-      document.getElementById('btn-copy').textContent       = '✓ Copied!';
-    }).catch(function() {
-      var el = document.getElementById('token-display');
-      var range = document.createRange();
-      range.selectNodeContents(el);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-    });
-  });
-
-  // ── Check If Returning From Google ────────────────────────────────────────
-  var code  = getUrlParam('code');
-  var error = getUrlParam('error');
+  // Check if returning from Google with token in hash
+  var accessToken = getHashParam('access_token');
+  var expiresIn   = getHashParam('expires_in');
+  var error       = getUrlParam('error');
 
   if (error) {
     showError('Sign in was cancelled or failed: ' + error);
-  } else if (code) {
-    exchangeCode(code);
+  } else if (accessToken) {
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('loading').style.display      = 'block';
+
+    // Get user email
+    fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(user) {
+      var tokenObj = {
+        access_token:  accessToken,
+        refresh_token: '',
+        expiry:        Date.now() + ((parseInt(expiresIn) || 3600) * 1000),
+        email:         user.email || ''
+      };
+
+      document.getElementById('loading').style.display       = 'none';
+      document.getElementById('signed-in-email').textContent = '✓ Signed in as ' + user.email;
+      document.getElementById('token-display').textContent   = JSON.stringify(tokenObj);
+      document.getElementById('token-section').style.display = 'block';
+
+      window.history.replaceState({}, document.title, REDIRECT_URI);
+    })
+    .catch(function(e) {
+      showError('Could not get user info: ' + e.message);
+    });
   }
 </script>
 </body>
