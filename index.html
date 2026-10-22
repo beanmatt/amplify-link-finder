@@ -13,53 +13,37 @@
       align-items: center; justify-content: center; padding: 20px;
     }
     .card {
-      background: #2a2a2a; border-radius: 12px; padding: 40px;
-      max-width: 440px; width: 100%; text-align: center;
+      background: #2a2a2a; border-radius: 12px; padding: 30px;
+      max-width: 400px; width: 100%; text-align: center;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
-    .logo { font-size: 28px; font-weight: 800; color: #F37321; letter-spacing: 1px; margin-bottom: 6px; }
-    .subtitle { font-size: 13px; color: #888; margin-bottom: 32px; }
-    .step { background: #323232; border-radius: 8px; padding: 20px; margin-bottom: 16px; text-align: left; }
-    .step-num { display: inline-block; background: #F37321; color: #fff; border-radius: 50%; width: 22px; height: 22px; text-align: center; line-height: 22px; font-size: 12px; font-weight: 700; margin-right: 8px; }
-    .step-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px; }
-    .step-desc { font-size: 12px; color: #999; line-height: 1.6; }
+    .logo { font-size: 24px; font-weight: 800; color: #F37321; letter-spacing: 1px; margin-bottom: 4px; }
+    .subtitle { font-size: 12px; color: #888; margin-bottom: 24px; }
+    .step { background: #323232; border-radius: 8px; padding: 16px; margin-bottom: 12px; text-align: left; }
+    .step-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .step-num { display: inline-block; background: #F37321; color: #fff; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; font-size: 11px; font-weight: 700; margin-right: 6px; }
     .btn-google {
       display: flex; align-items: center; justify-content: center; gap: 10px;
       background: #fff; color: #333; border: none; border-radius: 6px;
-      padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
-      width: 100%; margin-top: 12px; text-decoration: none; transition: background 0.2s;
+      padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+      width: 100%; margin-top: 10px; text-decoration: none; transition: background 0.2s;
     }
     .btn-google:hover { background: #f0f0f0; }
-    .btn-google img { width: 20px; height: 20px; }
-    .token-box {
-      display: none; background: #1a1a1a; border: 2px solid #F37321;
-      border-radius: 8px; padding: 20px; margin-top: 16px;
+    .btn-google img { width: 18px; height: 18px; }
+    .success-box {
+      display: none; background: #1a2a1a; border: 2px solid #4caf50;
+      border-radius: 8px; padding: 20px; margin-top: 12px; text-align: center;
     }
-    .token-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-    .token-value {
-      font-family: monospace; font-size: 10px; color: #8bc34a; word-break: break-all;
-      background: #111; padding: 10px; border-radius: 4px; margin-bottom: 12px;
-      line-height: 1.6; user-select: all; cursor: text; text-align: left;
-    }
-    .btn-copy {
-      background: #F37321; color: #fff; border: none; border-radius: 6px;
-      padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-      width: 100%; transition: background 0.2s;
-    }
-    .btn-copy:hover { background: #d4611a; }
-    .copy-success { display: none; color: #4caf50; font-size: 12px; margin-top: 8px; }
-    .signed-in-email { font-size: 12px; color: #4caf50; margin-bottom: 12px; }
-    .instructions {
-      background: #1e2a1e; border: 1px solid #2a4a2a; border-radius: 6px;
-      padding: 12px; margin-top: 12px; font-size: 11px; color: #8bc34a;
-      line-height: 1.8; text-align: left;
-    }
+    .success-icon { font-size: 36px; margin-bottom: 10px; }
+    .success-title { font-size: 14px; font-weight: 700; color: #4caf50; margin-bottom: 6px; }
+    .success-email { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+    .success-desc { font-size: 11px; color: #888; line-height: 1.6; }
     .error-box {
       display: none; background: #2a1a1a; border: 1px solid #f44336;
-      border-radius: 8px; padding: 16px; margin-top: 16px;
+      border-radius: 8px; padding: 16px; margin-top: 12px;
       font-size: 12px; color: #f44336; line-height: 1.6;
     }
-    .loading { color: #888; font-size: 13px; margin-top: 16px; display: none; }
+    .loading { color: #888; font-size: 12px; margin-top: 12px; display: none; }
   </style>
 </head>
 <body>
@@ -70,7 +54,6 @@
   <div id="main-content">
     <div class="step">
       <div class="step-title"><span class="step-num">1</span>Sign in with Google</div>
-      <div class="step-desc">Click below to sign in with your Amplify Google account.</div>
       <a id="btn-signin" href="#" class="btn-google">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
         Sign in with Google
@@ -80,28 +63,20 @@
 
   <div id="loading" class="loading">Signing you in...</div>
 
-  <div id="token-section" class="token-box">
-    <div class="signed-in-email" id="signed-in-email"></div>
-    <div class="token-label">Step 2 — Copy this token and paste it into InDesign</div>
-    <div class="token-value" id="token-display"></div>
-    <button class="btn-copy" id="btn-copy">📋 Copy Token</button>
-    <div class="copy-success" id="copy-success">✓ Copied! Now paste it into the plugin panel in InDesign.</div>
-    <div class="instructions">
-      In InDesign → Amplify Link Finder panel:<br>
-      1. Click <strong>"I Have a Token"</strong><br>
-      2. Paste the token and click <strong>"Sign In"</strong>
-    </div>
+  <div id="success-box" class="success-box">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Signed In Successfully!</div>
+    <div class="success-email" id="success-email"></div>
+    <div class="success-desc">You can now close this and return to InDesign.<br>The plugin will be ready to use.</div>
   </div>
 
   <div id="error-box" class="error-box"></div>
 </div>
 
 <script>
-  // ── CONFIGURATION ─────────────────────────────────────────────────────────
   const CLIENT_ID    = '78836034969-oukoojj5ef462ig9h3hsa1sqfm9167g3.apps.googleusercontent.com';
   const REDIRECT_URI = 'https://beanmatt.github.io/amplify-link-finder/';
   const SCOPE        = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email';
-  // ──────────────────────────────────────────────────────────────────────────
 
   function showError(msg) {
     document.getElementById('loading').style.display       = 'none';
@@ -112,16 +87,14 @@
   }
 
   function getHashParam(name) {
-    var hash   = window.location.hash.substring(1);
-    var params = new URLSearchParams(hash);
-    return params.get(name);
+    return new URLSearchParams(window.location.hash.substring(1)).get(name);
   }
 
   function getUrlParam(name) {
     return new URLSearchParams(window.location.search).get(name);
   }
 
-  // Sign in button — uses implicit flow (token returned directly)
+  // Sign in button
   document.getElementById('btn-signin').addEventListener('click', function(e) {
     e.preventDefault();
     var params = new URLSearchParams({
@@ -134,22 +107,7 @@
     window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
   });
 
-  // Copy button
-  document.getElementById('btn-copy').addEventListener('click', function() {
-    var text = document.getElementById('token-display').textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      document.getElementById('copy-success').style.display = 'block';
-      document.getElementById('btn-copy').textContent       = '✓ Copied!';
-    }).catch(function() {
-      var el    = document.getElementById('token-display');
-      var range = document.createRange();
-      range.selectNodeContents(el);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-    });
-  });
-
-  // Check if returning from Google with token in hash
+  // Handle token returned in URL hash
   var accessToken = getHashParam('access_token');
   var expiresIn   = getHashParam('expires_in');
   var error       = getUrlParam('error');
@@ -160,7 +118,6 @@
     document.getElementById('main-content').style.display = 'none';
     document.getElementById('loading').style.display      = 'block';
 
-    // Get user email
     fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: 'Bearer ' + accessToken }
     })
@@ -173,15 +130,31 @@
         email:         user.email || ''
       };
 
-      document.getElementById('loading').style.display       = 'none';
-      document.getElementById('signed-in-email').textContent = '✓ Signed in as ' + user.email;
-      document.getElementById('token-display').textContent   = JSON.stringify(tokenObj);
-      document.getElementById('token-section').style.display = 'block';
+      // Send token to parent (plugin webview)
+      try {
+        window.parent.postMessage(JSON.stringify({
+          type:  'amplify_token',
+          token: tokenObj
+        }), '*');
+      } catch(e) {}
+
+      // Also try webkit message handler for UXP webview
+      try {
+        window.webkit.messageHandlers.amplifyToken.postMessage(JSON.stringify({
+          type:  'amplify_token',
+          token: tokenObj
+        }));
+      } catch(e) {}
+
+      // Show success
+      document.getElementById('loading').style.display         = 'none';
+      document.getElementById('success-email').textContent     = '✓ ' + user.email;
+      document.getElementById('success-box').style.display     = 'block';
 
       window.history.replaceState({}, document.title, REDIRECT_URI);
     })
     .catch(function(e) {
-      showError('Could not get user info: ' + e.message);
+      showError('Could not get account info: ' + e.message);
     });
   }
 </script>
