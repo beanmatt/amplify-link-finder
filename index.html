@@ -37,7 +37,23 @@
     .success-icon { font-size: 36px; margin-bottom: 10px; }
     .success-title { font-size: 14px; font-weight: 700; color: #4caf50; margin-bottom: 6px; }
     .success-email { font-size: 12px; color: #aaa; margin-bottom: 10px; }
-    .success-desc { font-size: 11px; color: #888; line-height: 1.6; }
+    .token-label { font-size: 11px; color: #888; margin-bottom: 8px; }
+    .token-value {
+      font-family: monospace; font-size: 9px; color: #8bc34a; word-break: break-all;
+      background: #111; padding: 10px; border-radius: 4px; margin-bottom: 12px;
+      line-height: 1.6; text-align: left; user-select: all; cursor: text;
+    }
+    .btn-copy {
+      background: #F37321; color: #fff; border: none; border-radius: 6px;
+      padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+      width: 100%; transition: background 0.2s; margin-bottom: 8px;
+    }
+    .btn-copy:hover { background: #d4611a; }
+    .copy-success { display: none; color: #4caf50; font-size: 11px; margin-bottom: 10px; }
+    .instructions {
+      background: #1e2a1e; border: 1px solid #2a4a2a; border-radius: 6px;
+      padding: 10px; font-size: 11px; color: #8bc34a; line-height: 1.8; text-align: left;
+    }
     .error-box {
       display: none; background: #2a1a1a; border: 1px solid #f44336;
       border-radius: 8px; padding: 16px; margin-top: 12px;
@@ -65,9 +81,17 @@
 
   <div id="success-box" class="success-box">
     <div class="success-icon">✅</div>
-    <div class="success-title">Signed In Successfully!</div>
+    <div class="success-title">Signed In!</div>
     <div class="success-email" id="success-email"></div>
-    <div class="success-desc">You can now close this and return to InDesign.<br>The plugin will be ready to use.</div>
+    <div class="token-label">Copy this token and paste it into InDesign:</div>
+    <div class="token-value" id="token-display"></div>
+    <button class="btn-copy" id="btn-copy">📋 Copy Token</button>
+    <div class="copy-success" id="copy-success">✓ Copied!</div>
+    <div class="instructions">
+      In InDesign → Amplify Link Finder panel:<br>
+      1. Paste the token into the text box<br>
+      2. Click <strong>"Sign In"</strong>
+    </div>
   </div>
 
   <div id="error-box" class="error-box"></div>
@@ -79,8 +103,8 @@
   const SCOPE        = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email';
 
   function showError(msg) {
-    document.getElementById('loading').style.display       = 'none';
-    document.getElementById('main-content').style.display  = 'none';
+    document.getElementById('loading').style.display      = 'none';
+    document.getElementById('main-content').style.display = 'none';
     var box = document.getElementById('error-box');
     box.textContent   = msg;
     box.style.display = 'block';
@@ -94,20 +118,32 @@
     return new URLSearchParams(window.location.search).get(name);
   }
 
-  // Sign in button
   document.getElementById('btn-signin').addEventListener('click', function(e) {
     e.preventDefault();
     var params = new URLSearchParams({
-      client_id:     CLIENT_ID,
-      redirect_uri:  REDIRECT_URI,
-      response_type: 'token',
-      scope:         SCOPE,
+      client_id:              CLIENT_ID,
+      redirect_uri:           REDIRECT_URI,
+      response_type:          'token',
+      scope:                  SCOPE,
       include_granted_scopes: 'true'
     });
     window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
   });
 
-  // Handle token returned in URL hash
+  document.getElementById('btn-copy').addEventListener('click', function() {
+    var text = document.getElementById('token-display').textContent;
+    navigator.clipboard.writeText(text).then(function() {
+      document.getElementById('copy-success').style.display = 'block';
+      document.getElementById('btn-copy').textContent       = '✓ Copied!';
+    }).catch(function() {
+      var el    = document.getElementById('token-display');
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    });
+  });
+
   var accessToken = getHashParam('access_token');
   var expiresIn   = getHashParam('expires_in');
   var error       = getUrlParam('error');
@@ -130,26 +166,10 @@
         email:         user.email || ''
       };
 
-      // Send token to parent (plugin webview)
-      try {
-        window.parent.postMessage(JSON.stringify({
-          type:  'amplify_token',
-          token: tokenObj
-        }), '*');
-      } catch(e) {}
-
-      // Also try webkit message handler for UXP webview
-      try {
-        window.webkit.messageHandlers.amplifyToken.postMessage(JSON.stringify({
-          type:  'amplify_token',
-          token: tokenObj
-        }));
-      } catch(e) {}
-
-      // Show success
-      document.getElementById('loading').style.display         = 'none';
-      document.getElementById('success-email').textContent     = '✓ ' + user.email;
-      document.getElementById('success-box').style.display     = 'block';
+      document.getElementById('loading').style.display       = 'none';
+      document.getElementById('success-email').textContent   = '✓ ' + user.email;
+      document.getElementById('token-display').textContent   = JSON.stringify(tokenObj);
+      document.getElementById('success-box').style.display   = 'block';
 
       window.history.replaceState({}, document.title, REDIRECT_URI);
     })
