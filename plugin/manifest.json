@@ -1,1 +1,53 @@
-{}
+{
+  "id": "com.amplify.linkfinder",
+  "name": "Amplify Link Finder",
+  "version": "1.0.6",
+  "manifestVersion": 5,
+  "main": "main.js",
+  "icons": [
+    {
+      "path": "icons/plugin-icon.png",
+      "width": 48,
+      "height": 48,
+      "scale": [1, 2],
+      "theme": ["darkest", "dark", "medium", "light", "lightest", "all"],
+      "species": ["generic"]
+    }
+  ],
+  "host": [
+    {
+      "app": "ID",
+      "minVersion": "18.0"
+    }
+  ],
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "amplifyPanel",
+      "label": { "default": "Amplify Link Finder" },
+      "main": "index.html",
+      "icon": [
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/panel-icon.png",
+          "scale": [2],
+          "theme": ["darkest", "dark", "medium", "light", "lightest", "all"],
+          "species": ["generic"]
+        }
+      ]
+    }
+  ],
+  "requiredPermissions": {
+    "network": {
+      "domains": [
+        "https://oauth2.googleapis.com",
+        "https://www.googleapis.com",
+        "https://accounts.google.com",
+        "https://beanmatt.github.io"
+      ]
+    },
+    "localFileSystem": "fullAccess",
+    "allowCodeGenerationFromStrings": true
+  }
+}
