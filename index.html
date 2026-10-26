@@ -17,8 +17,7 @@
       max-width: 400px; width: 100%; text-align: center;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
-    .logo { font-size: 24px; font-weight: 800; color: #F37321; letter-spacing: 1px; margin-bottom: 4px; }
-    .logo img { width:250px; }
+    .logo img { width: 250px; }
     .subtitle { font-size: 12px; color: #888; margin-bottom: 24px; }
     .step { background: #323232; border-radius: 8px; padding: 16px; margin-bottom: 12px; text-align: left; }
     .step-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 6px; }
@@ -89,7 +88,7 @@
     <button class="btn-copy" id="btn-copy">📋 Copy Token</button>
     <div class="copy-success" id="copy-success">✓ Copied!</div>
     <div class="instructions">
-      In InDesign → Amplify Link Finder panel:<br>
+      In InDesign → Amplify Asset Tracker panel:<br>
       1. Paste the token into the text box<br>
       2. Click <strong>"Sign In"</strong>
     </div>
@@ -101,7 +100,12 @@
 <script>
   const CLIENT_ID    = '78836034969-oukoojj5ef462ig9h3hsa1sqfm9167g3.apps.googleusercontent.com';
   const REDIRECT_URI = 'https://beanmatt.github.io/amplify-link-finder/';
-  const SCOPE = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/spreadsheets';
+  const EXCHANGE_URL = 'https://amplify-auth-api.netlify.app/.netlify/functions/exchange-token';
+  const SCOPE = [
+    'https://www.googleapis.com/auth/drive.readonly',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/spreadsheets'
+  ].join(' ');
 
   function showError(msg) {
     document.getElementById('loading').style.display      = 'none';
@@ -109,10 +113,6 @@
     var box = document.getElementById('error-box');
     box.textContent   = msg;
     box.style.display = 'block';
-  }
-
-  function getHashParam(name) {
-    return new URLSearchParams(window.location.hash.substring(1)).get(name);
   }
 
   function getUrlParam(name) {
@@ -124,8 +124,10 @@
     var params = new URLSearchParams({
       client_id:              CLIENT_ID,
       redirect_uri:           REDIRECT_URI,
-      response_type:          'token',
+      response_type:          'code',
       scope:                  SCOPE,
+      access_type:            'offline',
+      prompt:                 'consent',
       include_granted_scopes: 'true'
     });
     window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
@@ -145,37 +147,52 @@
     });
   });
 
-  var accessToken = getHashParam('access_token');
-  var expiresIn   = getHashParam('expires_in');
-  var error       = getUrlParam('error');
+  var code  = getUrlParam('code');
+  var error = getUrlParam('error');
 
   if (error) {
     showError('Sign in was cancelled or failed: ' + error);
-  } else if (accessToken) {
+
+  } else if (code) {
     document.getElementById('main-content').style.display = 'none';
     document.getElementById('loading').style.display      = 'block';
 
-    fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { Authorization: 'Bearer ' + accessToken }
+    fetch(EXCHANGE_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ code: code, redirect_uri: REDIRECT_URI })
     })
     .then(function(r) { return r.json(); })
-    .then(function(user) {
+    .then(function(tokenData) {
+      if (tokenData.error) throw new Error(tokenData.error);
+      if (!tokenData.access_token) throw new Error('No access token returned');
+
+      return fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: 'Bearer ' + tokenData.access_token }
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(user) { return { tokenData: tokenData, user: user }; });
+    })
+    .then(function(result) {
+      var tokenData = result.tokenData;
+      var user      = result.user;
+
       var tokenObj = {
-        access_token:  accessToken,
-        refresh_token: '',
-        expiry:        Date.now() + ((parseInt(expiresIn) || 3600) * 1000),
+        access_token:  tokenData.access_token,
+        refresh_token: tokenData.refresh_token || '',
+        expiry:        Date.now() + ((parseInt(tokenData.expires_in) || 3600) * 1000),
         email:         user.email || ''
       };
 
-      document.getElementById('loading').style.display       = 'none';
-      document.getElementById('success-email').textContent   = '✓ ' + user.email;
-      document.getElementById('token-display').textContent   = JSON.stringify(tokenObj);
-      document.getElementById('success-box').style.display   = 'block';
+      document.getElementById('loading').style.display     = 'none';
+      document.getElementById('success-email').textContent = '✓ ' + user.email;
+      document.getElementById('token-display').textContent = JSON.stringify(tokenObj);
+      document.getElementById('success-box').style.display = 'block';
 
       window.history.replaceState({}, document.title, REDIRECT_URI);
     })
     .catch(function(e) {
-      showError('Could not get account info: ' + e.message);
+      showError('Could not complete sign in: ' + e.message);
     });
   }
 </script>
